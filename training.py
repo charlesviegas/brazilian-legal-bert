@@ -54,10 +54,10 @@ def download_model():
 
 def train(train_dataset, dev_dataset, model_filepath):
     train_batch_size = 4
-    num_epochs = 4
+    num_epochs = 1
     checkpoint = 'juridics-legal-bert-sms-' + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     model_savepath = os.path.join(output_path, checkpoint)
-    model = CrossEncoder(model_filepath, num_labels=1)
+    model = CrossEncoder(model_filepath, num_labels=1, max_length=128)
     train_dataloader = DataLoader(train_dataset, shuffle=True, batch_size=train_batch_size)
     evaluator = CEBinaryClassificationEvaluator.from_input_examples(dev_dataset, name='juridics')
     warmup_steps = math.ceil(len(train_dataloader) * num_epochs * 0.1)
@@ -66,6 +66,7 @@ def train(train_dataset, dev_dataset, model_filepath):
               evaluator=evaluator,
               epochs=num_epochs,
               evaluation_steps=5000,
+              show_progress_bar=True,
               warmup_steps=warmup_steps,
               output_path=model_savepath)
 
